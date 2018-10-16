@@ -1,0 +1,31 @@
+<!--Homepage-->
+<div class="container">
+    <div class="col-md-12 jumbotron">
+        <div class="text-center">
+            <h1>NY Times Web Scraper</h1>
+        </div>
+
+    </div>
+    <div class="col-md-12">
+        {{#if article}}
+            {{#each article}}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4><a href={{this.link}} target="_blank">{{this.title}}</a></h4>
+                </div>
+                <div class="panel-body">
+                    <p> {{this.summary}}</p>
+        
+                    <button type="button" class="btn btn-success save" data-id={{this._id}}>Save Article</button>
+                </div>
+            </div>
+            {{/each}}
+        {{else}}
+        <div class="panel panel-default">
+            <div class="panel-body">
+            <h4>Something went wrong. Sorry!</h4>
+            </div>
+         </div>
+        {{/if}}
+    </div>
+</div>
