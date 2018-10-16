@@ -46,12 +46,14 @@ app.set("view engine", "handlebars");
 mongoose.connect("mongodb://localhost/nyt", { useNewUrlParser: true });
 
 // route to main page
-app.get('/', (req,res) => {
+app.get('/', function(req,res) {
   db.Article
-    .find({})
-    .then(function(articles) {
-      res.render('index', {articles});
-      console.log(articles);
+    .find({
+      "saved": false
+    })
+    .then(function(dbArticles) {
+      res.render('index', {dbArticles});
+      console.log(dbArticles);
     })
     .catch(function(err) {
       res.json(err);
