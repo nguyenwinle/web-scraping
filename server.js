@@ -56,6 +56,15 @@ app.get("/", function(req, res) {
   });
 });
 
+app.get("/saved", function(req, res) {
+  db.Article.find({"saved": true}, function(error, data) {
+    var hbsObject = {
+      article: data
+    };
+    res.render("saved", hbsObject);
+  });
+});
+
 // A GET route for scraping the nytimes US page website
 app.get("/scrape", function(req, res) {
   // First, we grab the body of the html with axios
@@ -112,7 +121,6 @@ app.get("/articles", function(req, res) {
 });
 
 
-
 app.get("/articles/:id", function(req, res) {
   Article.findById(req.params.id, function(err, data) {
 		res.json(data);
@@ -122,9 +130,10 @@ app.get("/articles/:id", function(req, res) {
 // save article
 app.post("/articles/save/:id", function(req, res) {
   db.Article
-  .update({_id: req.params.id},{saved: true})
+  .findOneAndUpdate({_id: req.params.id},{saved: true})
   .then(function(result) {
     res.redirect('/');
+    alert("post saved successful");
   })
   .catch(function(err) {
     err => res.json(err);
@@ -143,66 +152,7 @@ app.post("/articles/delete/:id", function(req, res) {
   });
 });
 
-// Create a new note
-app.post("/notes/save/:id", function(req, res) {
-  // Create a new note and pass the req.body to the entry
-  var newNote = new Note({
-    body: req.body.text,
-    article: req.params.id
-  });
-  console.log(req.body)
-  // And save the new note the db
-  newNote.save(function(error, note) {
-    // Log any errors
-    if (error) {
-      console.log(error);
-    }
-    // Otherwise
-    else {
-      // Use the article id to find and update it's notes
-      Article.findById({ "_id": req.params.id }, {$push: { "notes": note } })
-      // catch the above query
-      .catch(function(err) {
-        // Log any errors
-        if (err) {
-          console.log(err);
-          res.send(err);
-        }
-        else {
-          // Or send the note to the browser
-          res.send(note);
-        }
-      });
-    }
-  });
-});
 
-// Delete a note
-app.delete("/notes/delete/:note_id/:article_id", function(req, res) {
-  // Use the note id to find and delete it
-  Note.findOneAndRemove({ "_id": req.params.note_id }, function(err) {
-    // Log any errors
-    if (err) {
-      console.log(err);
-      res.send(err);
-    }
-    else {
-      Article.findOneAndUpdate({ "_id": req.params.article_id }, {$pull: {"notes": req.params.note_id}})
-       // Execute the above query
-        .catch(function(err) {
-          // Log any errors
-          if (err) {
-            console.log(err);
-            res.send(err);
-          }
-          else {
-            // Or send the note to the browser
-            res.send("Note Deleted");
-          }
-        });
-    }
-  });
-});
 
 // Start the server
 app.listen(PORT, function() {
