@@ -48,20 +48,19 @@ mongoose.connect("mongodb://localhost/nyt", { useNewUrlParser: true });
 // renders main page
 app.get("/", function(req, res) {
   db.Article.find({"saved": false}, function(error, data) {
-    var hbsObject = {
+    var obj = {
       article: data
     };
-    console.log(hbsObject);
-    res.render("index", hbsObject);
+    res.render("index", obj);
   });
 });
 
 app.get("/saved", function(req, res) {
   db.Article.find({"saved": true}, function(error, data) {
-    var hbsObject = {
+    var obj = {
       article: data
     };
-    res.render("saved", hbsObject);
+    res.render("saved", obj);
   });
 });
 
